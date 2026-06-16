@@ -437,55 +437,59 @@ public class TextBuffer implements java.lang.CharSequence
 	}
 
 	private void onAdd(int charOffset,int totalChars){
-		Pair s = findSpan(charOffset);
-		Pair p=_spans.get(s.first);
-		p.setFirst(p.first+totalChars);
+	    if (_spans.isEmpty()) return;
+	    Pair s = findSpan(charOffset);
+	    if (s.first < 0 || s.first >= _spans.size()) return;
+	    Pair p=_spans.get(s.first);
+	    p.setFirst(p.first+totalChars);
 	}
 	
 	private void onDel(int charOffset,int totalChars){
-		int len = length();
-		if (len==0){
-			clearSpans();
-			return;
-		}
-
-		Pair s = findSpan2(charOffset);
-		if(totalChars==1){
-			Pair p=_spans.get(s.first);
-			if(p.first>1){
-				p.setFirst(p.first-1);
-			}
-			else{
-				_spans.remove(s.first);
-			}
-		}
-		else{
-			int o=s.second;
-			int l=charOffset-o;
-			Pair p=_spans.get(s.first);
-			if(p.first>l){
-				p.setFirst(p.first-l);
-			}
-			else{
-				_spans.remove(s.first);
-			}
-			totalChars-=l;
-			if(totalChars>0){
-				for(int i=s.first;i>=0;i--){
-					Pair p1=_spans.get(i);
-					l=p1.first;
-					if(totalChars>l){
-						totalChars-=l;
-						_spans.remove(i);
-					}
-					else{
-						p1.setFirst(p1.first-totalChars);
-						break;
-					}
-				}
-			}
-
-		}
+	    int len = length();
+	    if (len==0){
+	        if (!_spans.isEmpty()) clearSpans();
+	        return;
+	    }
+	
+	    Pair s = findSpan2(charOffset);
+	    if(totalChars==1){
+	        if (_spans.isEmpty() || s.first < 0 || s.first >= _spans.size()) return;
+	        Pair p=_spans.get(s.first);
+	        if(p.first>1){
+	            p.setFirst(p.first-1);
+	        }
+	        else{
+	            _spans.remove(s.first);
+	        }
+	    }
+	    else{
+	        int o=s.second;
+	        int l=charOffset-o;
+	        if (_spans.isEmpty() || s.first < 0 || s.first >= _spans.size()) return;
+	        Pair p=_spans.get(s.first);
+	        if(p.first>l){
+	            p.setFirst(p.first-l);
+	        }
+	        else{
+	            _spans.remove(s.first);
+	        }
+	        totalChars-=l;
+	        if(totalChars>0){
+	            for(int i=s.first;i>=0;i--){
+	                if (i < 0 || i >= _spans.size()) continue;
+	                Pair p1=_spans.get(i);
+	                l=p1.first;
+	                if(totalChars>l){
+	                    totalChars-=l;
+	                    _spans.remove(i);
+	                }
+	                else{
+	                    p1.setFirst(p1.first-totalChars);
+	                    break;
+	                }
+	            }
+	        }
+	    }
 	}
 	
 	private Pair findSpan(int index){
