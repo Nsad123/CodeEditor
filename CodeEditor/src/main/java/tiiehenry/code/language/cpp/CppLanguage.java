@@ -75,14 +75,27 @@ public class CppLanguage extends Language {
 		this.setNames(news);
 
 	}
+	private static String[] stripSignatures(String[] names) {
+		String[] result = new String[names.length];
+		for (int i = 0; i < names.length; i++) {
+			int paren = names[i].indexOf('(');
+			int colon = names[i].indexOf(':');
+			int end = names[i].length();
+			if (paren >= 0 && paren < end) end = paren;
+			if (colon >= 0 && colon < end) end = colon;
+			result[i] = names[i].substring(0, end);
+		}
+		return result;
+	}
+
 	private CppLanguage(){
 		setOperators(BASIC_C_OPERATORS);
 		setKeywords(keywords);
-		setNames(cFunctions);//先setName才能addName
+		setNames(stripSignatures(cFunctions));//先setName才能addName
 		addNames(preDefineField);
 		addNames(cppNamespace);
 		addNames(cppClasses);
-		addNames(cppFunctions);
+		addNames(stripSignatures(cppFunctions));
 		addNames(extraWord);
 	}
 }
