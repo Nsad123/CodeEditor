@@ -429,7 +429,8 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         outAttrs.inputType = InputType.TYPE_CLASS_TEXT
-                | InputType.TYPE_TEXT_FLAG_MULTI_LINE;
+                | InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
         outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_ENTER_ACTION
                 | EditorInfo.IME_ACTION_DONE
                 | EditorInfo.IME_FLAG_NO_EXTRACT_UI;
