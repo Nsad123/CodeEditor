@@ -63,7 +63,9 @@ public abstract class ColorScheme {
 			case Lexer.LITERAL:
 				element = Colorable.LITERAL;
 				break;
-			case Lexer.SINGLE_SYMBOL_LINE_A: //fall-through
+			case Lexer.SINGLE_SYMBOL_LINE_A:
+				element = Colorable.LITERAL;
+				break;
 			case Lexer.SINGLE_SYMBOL_WORD:
 			case Lexer.OPERATOR:
 				element = Colorable.SECONDARY;
