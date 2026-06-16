@@ -2730,18 +2730,17 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
                 isInvalidateSingleRow = false;
             }
 
-            if (!makeCharVisible(_caretPosition)) {
-                //invalidate previous row too if its wrapping changed
-                if (_hDoc.isWordWrap() &&
-                        originalOffset != _hDoc.getRowOffset(invalidateStartRow)) {
-                    --invalidateStartRow;
-                }
+            if (_hDoc.isWordWrap() &&
+                    originalOffset != _hDoc.getRowOffset(invalidateStartRow)) {
+                --invalidateStartRow;
+            }
 
+            if (makeCharVisible(_caretPosition)) {
+                invalidateFromRow(invalidateStartRow);
+            } else {
                 if (isInvalidateSingleRow && !_hDoc.isWordWrap()) {
-                    //replaced text only affects current row
                     invalidateRows(_caretRow, _caretRow + 1);
                 } else {
-                    //TODO invalidate damaged rows only
                     invalidateFromRow(invalidateStartRow);
                 }
             }
@@ -2826,18 +2825,19 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
                 isInvalidateSingleRow = false;
             }
 
-            if (!makeCharVisible(_caretPosition)) {
-                //invalidate previous row too if its wrapping changed
-                if (_hDoc.isWordWrap() &&
-                        originalOffset != _hDoc.getRowOffset(invalidateStartRow)) {
-                    --invalidateStartRow;
-                }
+            //invalidate previous row too if its wrapping changed
+            if (_hDoc.isWordWrap() &&
+                    originalOffset != _hDoc.getRowOffset(invalidateStartRow)) {
+                --invalidateStartRow;
+            }
 
+            if (makeCharVisible(_caretPosition)) {
+                // scrolled - full redraw already triggered, but still invalidate to be safe
+                invalidateFromRow(invalidateStartRow);
+            } else {
                 if (isInvalidateSingleRow && !_hDoc.isWordWrap()) {
-                    //replaced text only affects current row
                     invalidateRows(_caretRow, _caretRow + 1);
                 } else {
-                    //TODO invalidate damaged rows only
                     invalidateFromRow(invalidateStartRow);
                 }
             }
