@@ -2108,6 +2108,10 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
         };
 
         private void determineSpansDebounced() {
+            // Immediately reset spans to a single NORMAL span covering all text,
+            // so realDraw never uses stale span positions from before the edit.
+            // The background lexer will restore proper syntax highlighting after 300ms.
+            _hDoc.clearSpans();
             FreeScrollingTextField.this.removeCallbacks(_respanRunnable);
             FreeScrollingTextField.this.postDelayed(_respanRunnable, 300);
         }
@@ -2174,17 +2178,14 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
                         moveCaretLeft(true);
 
                         if (_caretRow < originalRow) {
-                            // either a newline was deleted or the caret was on the
-                            // first word and it became short enough to fit the prev
-                            // row
                             invalidateFromRow(_caretRow);
                         } else if (_hDoc.isWordWrap()) {
                             if (originalOffset != _hDoc.getRowOffset(originalRow)) {
-                                //invalidate previous row too if its wrapping changed
                                 --originalRow;
                             }
-                            //TODO invalidate damaged rows only
                             invalidateFromRow(originalRow);
+                        } else {
+                            invalidateFromRow(_caretRow);
                         }
                     }
                     break;
@@ -2213,11 +2214,11 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
 
                     if (_hDoc.isWordWrap()) {
                         if (originalOffset != _hDoc.getRowOffset(originalRow)) {
-                            //invalidate previous row too if its wrapping changed
                             --originalRow;
                         }
-                        //TODO invalidate damaged rows only
                         invalidateFromRow(originalRow);
+                    } else {
+                        invalidateFromRow(_caretRow);
                     }
                     break;
             }
