@@ -92,6 +92,10 @@ public class LexerTokenizer {
 								spanStartPosition = workingPosition - currentCharInWord;
 								state = SINGLE_SYMBOL_WORD;
 								tokens.add(new Pair(spanStartPosition, state));
+							} else if (Character.isDigit(candidateWord[0])) {
+								spanStartPosition = workingPosition - currentCharInWord;
+								state = NUMBER;
+								tokens.add(new Pair(spanStartPosition, state));
 							} else if (language.isKeyword(new String(candidateWord, 0, currentCharInWord))) {
 								spanStartPosition = workingPosition - currentCharInWord;
 								state = KEYWORD;
@@ -108,9 +112,9 @@ public class LexerTokenizer {
 							currentCharInWord = 0;
 						}
 
-						// mark operators as normal
-						if (state != NORMAL && language.isOperator(currentChar)) {
-							state = NORMAL;
+						// mark operators with OPERATOR token type for coloring
+						if (language.isOperator(currentChar)) {
+							state = OPERATOR;
 							tokens.add(new Pair(workingPosition, state));
 						}
 					} else if (currentCharInWord < MAX_KEYWORD_LENGTH) {
