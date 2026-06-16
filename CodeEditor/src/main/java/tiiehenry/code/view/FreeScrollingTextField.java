@@ -2099,6 +2099,19 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
         private boolean _isInSelectionMode = false;
         private boolean _isInSelectionMode2;
 
+        private final Runnable _respanRunnable = new Runnable() {
+            @Override
+            public void run() {
+                isShowRegion = false;
+                _lexer.tokenize(_hDoc);
+            }
+        };
+
+        private void determineSpansDebounced() {
+            FreeScrollingTextField.this.removeCallbacks(_respanRunnable);
+            FreeScrollingTextField.this.postDelayed(_respanRunnable, 300);
+        }
+
         /**
          * Analyze the text for programming language keywords and redraws the
          * text view when done. The global programming language used is set with
@@ -2210,7 +2223,7 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
             }
 
             setEdited(true);
-            determineSpans();
+            determineSpansDebounced();
         }
 
         /**
@@ -2579,7 +2592,7 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
             updateCaretRow();
 
             setEdited(true);
-            determineSpans();
+            determineSpansDebounced();
             stopTextComposing();
 
             if (!makeCharVisible(_caretPosition)) {
@@ -2622,7 +2635,7 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
                 _caretPosition = _selectionAnchor;
                 updateCaretRow();
                 setEdited(true);
-                determineSpans();
+                determineSpansDebounced();
                 setSelectText(false);
                 stopTextComposing();
 
@@ -2707,7 +2720,7 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
 
             if (dirty) {
                 setEdited(true);
-                determineSpans();
+                determineSpansDebounced();
             }
 
             int originalRow = _caretRow;
@@ -2803,7 +2816,7 @@ public abstract class FreeScrollingTextField extends FreeScrollingTextAbstract {
 
             if (dirty) {
                 setEdited(true);
-                determineSpans();
+                determineSpansDebounced();
             }
 
             int originalRow = _caretRow;
