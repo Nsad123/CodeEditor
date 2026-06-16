@@ -94,8 +94,8 @@ public class LexerTokenizer {
 								tokens.add(new Pair(spanStartPosition, state));
 							} else if (Character.isDigit(candidateWord[0])) {
 								spanStartPosition = workingPosition - currentCharInWord;
-								state = NUMBER;
-								tokens.add(new Pair(spanStartPosition, state));
+								tokens.add(new Pair(spanStartPosition, NUMBER));
+								state = NORMAL;
 							} else if (language.isKeyword(new String(candidateWord, 0, currentCharInWord))) {
 								spanStartPosition = workingPosition - currentCharInWord;
 								state = KEYWORD;
@@ -112,10 +112,11 @@ public class LexerTokenizer {
 							currentCharInWord = 0;
 						}
 
-						// mark operators with OPERATOR token type for coloring
+						// mark operators - emit OPERATOR token then immediately return to NORMAL
 						if (language.isOperator(currentChar)) {
-							state = OPERATOR;
-							tokens.add(new Pair(workingPosition, state));
+							tokens.add(new Pair(workingPosition, OPERATOR));
+							state = NORMAL;
+							tokens.add(new Pair(workingPosition + 1, NORMAL));
 						}
 					} else if (currentCharInWord < MAX_KEYWORD_LENGTH) {
 						// collect non-whitespace chars up to MAX_KEYWORD_LENGTH
